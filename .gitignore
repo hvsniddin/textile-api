@@ -1,0 +1,14 @@
+.venv
+.idea
+.junie
+.vscode
+__pycache__/
+media/
+
+.DS_Store
+*.pyc
+.env.*
+*.env
+!.env.example
+AGENTS.md
+*.rdb
