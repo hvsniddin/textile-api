@@ -34,7 +34,7 @@ class ProcessStep(TimeStampedModel):
 
 class ProductProcessStep(TimeStampedModel):
     step = models.ForeignKey(ProcessStep, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     price = models.PositiveIntegerField()
     order = models.PositiveSmallIntegerField()
 
@@ -49,7 +49,8 @@ class EmployeeReport(TimeStampedModel):
         PENDING = 'pending', 'Pending'
 
     employee = models.ForeignKey("authentication.EmployeeProfile", on_delete=models.CASCADE)
-    step = models.ForeignKey("textile.ProductProcessStep", on_delete=models.CASCADE)
+    step = models.ForeignKey("textile.ProductProcessStep", on_delete=models.SET_NULL, null=True)
+    price_snapshot = models.PositiveIntegerField(null=True, blank=True)
     count = models.PositiveIntegerField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
 

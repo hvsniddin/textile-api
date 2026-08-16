@@ -36,9 +36,9 @@ class ProductProcessStepSerializer(serializers.ModelSerializer):
 
 class EmployeeReportSerializer(serializers.ModelSerializer):
     employee_name = serializers.CharField(source='employee.full_name', read_only=True)
-    step_name = serializers.CharField(source='step.step.name', read_only=True)
-    product_name = serializers.CharField(source='step.product.name', read_only=True)
-    step_price = serializers.IntegerField(source='step.price', read_only=True)
+    step_name = serializers.SerializerMethodField()
+    product_name = serializers.SerializerMethodField()
+    step_price = serializers.IntegerField(source='price_snapshot', read_only=True)
 
     class Meta:
         model = EmployeeReport
@@ -55,7 +55,17 @@ class EmployeeReportSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['employee', 'employee_name', 'step_name', 'product_name', 'created_at', 'updated_at']
+        read_only_fields = ['employee', 'employee_name', 'created_at', 'updated_at', 'price_snapshot']
+
+    def get_step_name(self, obj):
+        if obj.step:
+            return obj.step.step.name
+        return None
+
+    def get_product_name(self, obj):
+        if obj.step and obj.step.product:
+            return obj.step.product.name
+        return None
 
     def _is_admin_user(self, user):
         return bool(
@@ -114,4 +124,9 @@ class EmployeeReportSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Employee profile is required.')
 
         validated_data['employee'] = employee
+        
+        step = validated_data.get('step')
+        if step:
+            validated_data['price_snapshot'] = step.price
+            
         return super().create(validated_data)

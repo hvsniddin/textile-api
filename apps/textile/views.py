@@ -153,7 +153,7 @@ class EmployeeReportViewSet(viewsets.ModelViewSet):
             else month_start.replace(month=month_start.month + 1)
         )
         revenue_expression = ExpressionWrapper(
-            F('count') * F('step__price'), output_field=IntegerField()
+            F('count') * F('price_snapshot'), output_field=IntegerField()
         )
         summary = self.get_queryset().filter(
             status=EmployeeReport.Status.APPROVED,
